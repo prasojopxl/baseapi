@@ -1,13 +1,24 @@
 const { users } = require("../../models")
-
+const bcrypt = require("bcryptjs");
 
 // post Data
 const postData = async (req, res, next) => {
+    const { body } = req
+    const isEmailUsed = await users.findOne({
+        where: {
+            email: body.email
+        }
+    })
+    if (isEmailUsed) {
+        return res.status(400).json({
+            message: "email already use"
+        })
+    }
     try {
-        const body = req.body
+        const password = await bcrypt.hashSync(body.password, 10)
         const addData = await users.create({
             email: body.email,
-            password: body.password,
+            password: password,
             name: body.name,
             status: false,
             role: "admin"
@@ -62,4 +73,28 @@ const deleteData = async (req, res, next) => {
     }
 }
 
-module.exports = { postData, putData, deleteData }
+//Login
+const loginData = async (req, res, next) => {
+    try {
+        const body = req.body;
+        const isEmail = await users.findOne({
+            where: {
+                email: body.email
+            }
+        })
+
+        if (!isEmail) {
+            return res.status(400).json({
+                message: "Email not found"
+            })
+        }
+        return res.json({
+            message: "OK"
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+module.exports = { postData, putData, deleteData, loginData }
