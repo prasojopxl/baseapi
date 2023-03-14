@@ -3,8 +3,6 @@ const router = express()
 const { postData, getImage } = require("./controllers")
 const multer = require('multer');
 
-
-
 const path = require("path")
 const uploadFolder = __dirname + '/images';
 const storage = multer.diskStorage({

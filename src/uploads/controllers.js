@@ -6,12 +6,12 @@ const upload = multer({ dest: __dirname + '/uploads/images' });
 const postData = async (req, res, next) => {
     const { body } = req
     if (req.file) {
-        // res.json({
-        //     filename: req.file.filename,
-        //     size: req.file.size
-        //     mimetype: req.file.mimetype
-        // });
-        res.json(req.file);
+        res.json({
+            filename: req.file.filename,
+            size: req.file.size,
+            mimetype: req.file.mimetype,
+            fieldname: req.file.fieldname
+        });
     }
     else throw 'error';
 }
