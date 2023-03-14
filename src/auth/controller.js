@@ -1,5 +1,6 @@
 const { users } = require("../../models")
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // post Data
 const postData = async (req, res, next) => {
@@ -15,7 +16,7 @@ const postData = async (req, res, next) => {
         })
     }
     try {
-        const password = await bcrypt.hashSync(body.password, 10)
+        const password = bcrypt.hashSync(body.password, 10)
         const addData = await users.create({
             email: body.email,
             password: password,
@@ -77,19 +78,30 @@ const deleteData = async (req, res, next) => {
 const loginData = async (req, res, next) => {
     try {
         const body = req.body;
-        const isEmail = await users.findOne({
+        const user = await users.findOne({
             where: {
                 email: body.email
             }
         })
-
-        if (!isEmail) {
+        if (!user) {
             return res.status(400).json({
                 message: "Email not found"
             })
         }
+        const isPasswordCorrect = bcrypt.compareSync(body.password, user.password)
+        if (!isPasswordCorrect) {
+            return res.status(400).json({
+                message: "password incorrect"
+            })
+        }
+        const data = {
+            id: user.id,
+            email: user.email,
+            password: user.password
+        }
+        const token = jwt.sign(data, "screet")
         return res.json({
-            message: "OK"
+            token
         })
     } catch (error) {
         console.log(error)
