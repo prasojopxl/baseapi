@@ -6,6 +6,7 @@ const { urlencoded, json } = require("express")
 
 // route user
 const routeUsers = require("./users/index")
+const routeAuth = require("./auth/index")
 
 const app = express()
 dotenv.config()
@@ -35,6 +36,7 @@ app.get("/", (req, res) => {
     })
 })
 app.use("/users", routeUsers)
+app.use("/auth", routeAuth)
 
 // menjalankan aplikasi
 const port = process.env.APP_PORT || 7002
